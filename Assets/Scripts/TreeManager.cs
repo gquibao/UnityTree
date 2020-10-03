@@ -4,16 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TreeManager : MonoBehaviour
 {
     [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private Toggle isCombineEnabledToggle;
+    [SerializeField] private Button clearButton;
     private List<Node> _trees;
 
     private void Start()
     {
         _trees = new List<Node>();
         inputField.onSubmit.AddListener(InsertNodes);
+        clearButton.onClick.AddListener(ClearTreeList);
     }
 
     private void Update()
@@ -29,6 +33,11 @@ public class TreeManager : MonoBehaviour
         }
     }
 
+    private void ClearTreeList()
+    {
+        _trees.Clear();
+    }
+
     private void InsertNodes(string inputText)
     {
         var nodeNames = FormatString(inputText);
@@ -37,11 +46,11 @@ public class TreeManager : MonoBehaviour
         if (nextNode != null)
         {
             nodeNames.RemoveAt(0);
-            nextNode.CreateChildNodes(nodeNames);
+            nextNode.CreateChildNodes(nodeNames, isCombineEnabledToggle.isOn);
         }
         else
         {
-            var newNode = new Node(nodeNames);
+            var newNode = new Node(nodeNames, isCombineEnabledToggle.isOn);
             _trees.Add(newNode);
         }
     }

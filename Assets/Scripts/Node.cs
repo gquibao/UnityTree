@@ -8,16 +8,16 @@ public class Node
     public string nodeName;
     public List<Node> _childNodes;
 
-    public Node(List<string> nodeNames)
+    public Node(List<string> nodeNames, bool isCombineEnabled = false)
     {
         if (nodeNames.Count == 0) return;
         nodeName = nodeNames[0];
         nodeNames.RemoveAt(0);
         if (nodeNames.Count == 0) return;
-        CreateChildNodes(nodeNames);
+        CreateChildNodes(nodeNames, isCombineEnabled);
     }
 
-    public void CreateChildNodes(List<string> nodeNames)
+    public void CreateChildNodes(List<string> nodeNames, bool isCombineEnabled)
     {
         if(_childNodes == null) _childNodes = new List<Node>();
         var currentName = nodeNames[0];
@@ -26,28 +26,35 @@ public class Node
         {
             nodeNames.RemoveAt(0);
             if (nodeNames.Count == 0) return;
-            nextNode.CreateChildNodes(nodeNames);
+            nextNode.CreateChildNodes(nodeNames, isCombineEnabled);
         }
         else
         {
             if (currentName.Contains("|"))
             {
-                InsertMultipleLeaf(nodeNames, currentName);
+                if (isCombineEnabled)
+                {
+                    InsertCombinatoryNodes(nodeNames, currentName);
+                }
+                else
+                {
+                    InsertMultipleNodes(nodeNames, currentName);
+                }
             }
             else
             {
-                InsertSingleLeaf(nodeNames);
+                InsertSingleNode(nodeNames);
             }
         }
     }
 
-    private void InsertSingleLeaf(List<string> nodeNames)
+    private void InsertSingleNode(List<string> nodeNames)
     {
         var newNode = new Node(nodeNames);
         _childNodes?.Add(newNode);
     }
 
-    private void InsertMultipleLeaf(List<string> nodeNames, string currentName)
+    private void InsertMultipleNodes(List<string> nodeNames, string currentName)
     {
         nodeNames.RemoveAt(0);
         var names = currentName.Split('|').ToList();
@@ -55,8 +62,27 @@ public class Node
         {
             var newNameList = nodeNames.GetRange(0, nodeNames.Count);
             newNameList.Insert(0, name);
-            var newNode = new Node(newNameList);
-            _childNodes?.Add(newNode);
+            CreateChildNodes(newNameList, false);
+        });
+    }
+
+    private void InsertCombinatoryNodes(List<string> nodeNames, string currentName)
+    {
+        nodeNames.RemoveAt(0);
+        var names = currentName.Split('|').ToList();
+        var count = names.Count;
+        for (var i = 0; i < count; i++)
+        {
+            for (var j = i + 1; j < count; j++)
+            {
+                names.Add($"{names[i]}-{names[j]}");
+            }
+        }
+        names.ForEach(name =>
+        {
+            var newNameList = nodeNames.GetRange(0, nodeNames.Count);
+            newNameList.Insert(0, name);
+            CreateChildNodes(newNameList, true);
         });
     }
 
