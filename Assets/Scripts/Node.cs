@@ -30,25 +30,34 @@ public class Node
         }
         else
         {
-            Node newNode;
             if (currentName.Contains("|"))
             {
-                nodeNames.RemoveAt(0);
-                var names = currentName.Split('|').ToList();
-                names.ForEach(name =>
-                {
-                    var newNameList = nodeNames;
-                    newNameList.Insert(0, name);
-                    newNode = new Node(newNameList);
-                    _childNodes?.Add(newNode);
-                });
+                InsertMultipleLeaf(nodeNames, currentName);
             }
             else
             {
-                newNode = new Node(nodeNames);
-                _childNodes?.Add(newNode);
+                InsertSingleLeaf(nodeNames);
             }
         }
+    }
+
+    private void InsertSingleLeaf(List<string> nodeNames)
+    {
+        var newNode = new Node(nodeNames);
+        _childNodes?.Add(newNode);
+    }
+
+    private void InsertMultipleLeaf(List<string> nodeNames, string currentName)
+    {
+        nodeNames.RemoveAt(0);
+        var names = currentName.Split('|').ToList();
+        names.ForEach(name =>
+        {
+            var newNameList = nodeNames.GetRange(0, nodeNames.Count);
+            newNameList.Insert(0, name);
+            var newNode = new Node(newNameList);
+            _childNodes?.Add(newNode);
+        });
     }
 
     public void PrintLeaf()
