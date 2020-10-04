@@ -1939,7 +1939,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputField: {fileID: 964135960}
-  isCombineEnabledToggle: {fileID: 1041829326}
+  combinatorialToggle: {fileID: 1041829326}
   clearButton: {fileID: 759428351}
 --- !u!4 &1736355996
 Transform:

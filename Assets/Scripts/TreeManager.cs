@@ -9,15 +9,17 @@ using UnityEngine.UI;
 public class TreeManager : MonoBehaviour
 {
     [SerializeField] private TMP_InputField inputField;
-    [SerializeField] private Toggle isCombineEnabledToggle;
+    [SerializeField] private Toggle combinatorialToggle;
     [SerializeField] private Button clearButton;
     private List<Node> _trees;
+    private bool _isCombinatorialEnabled;
 
     private void Start()
     {
         _trees = new List<Node>();
         inputField.onSubmit.AddListener(InsertNodes);
         clearButton.onClick.AddListener(ClearTreeList);
+        combinatorialToggle.onValueChanged.AddListener(EnableCombine);
     }
 
     private void Update()
@@ -33,6 +35,11 @@ public class TreeManager : MonoBehaviour
         }
     }
 
+    private void EnableCombine(bool isEnabled)
+    {
+        _isCombinatorialEnabled = isEnabled;
+    }
+
     private void ClearTreeList()
     {
         _trees.Clear();
@@ -46,11 +53,11 @@ public class TreeManager : MonoBehaviour
         if (nextNode != null)
         {
             nodeNames.RemoveAt(0);
-            nextNode.CreateChildNodes(nodeNames, isCombineEnabledToggle.isOn);
+            nextNode.CreateChildNodes(nodeNames, _isCombinatorialEnabled);
         }
         else
         {
-            var newNode = new Node(nodeNames, isCombineEnabledToggle.isOn);
+            var newNode = new Node(nodeNames, _isCombinatorialEnabled);
             _trees.Add(newNode);
         }
     }

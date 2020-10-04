@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Node
@@ -8,16 +7,16 @@ public class Node
     public string nodeName;
     public List<Node> _childNodes;
 
-    public Node(List<string> nodeNames, bool isCombineEnabled = false)
+    public Node(List<string> nodeNames, bool isCombinatorialEnabled)
     {
         if (nodeNames.Count == 0) return;
         nodeName = nodeNames[0];
         nodeNames.RemoveAt(0);
         if (nodeNames.Count == 0) return;
-        CreateChildNodes(nodeNames, isCombineEnabled);
+        CreateChildNodes(nodeNames, isCombinatorialEnabled);
     }
 
-    public void CreateChildNodes(List<string> nodeNames, bool isCombineEnabled)
+    public void CreateChildNodes(List<string> nodeNames, bool isCombinatorialEnabled)
     {
         if(_childNodes == null) _childNodes = new List<Node>();
         var currentName = nodeNames[0];
@@ -26,15 +25,15 @@ public class Node
         {
             nodeNames.RemoveAt(0);
             if (nodeNames.Count == 0) return;
-            nextNode.CreateChildNodes(nodeNames, isCombineEnabled);
+            nextNode.CreateChildNodes(nodeNames, isCombinatorialEnabled);
         }
         else
         {
             if (currentName.Contains("|"))
             {
-                if (isCombineEnabled)
+                if (isCombinatorialEnabled)
                 {
-                    InsertCombinatoryNodes(nodeNames, currentName);
+                    InsertCombinatorialNodes(nodeNames, currentName);
                 }
                 else
                 {
@@ -43,14 +42,14 @@ public class Node
             }
             else
             {
-                InsertSingleNode(nodeNames);
+                InsertSingleNode(nodeNames, isCombinatorialEnabled);
             }
         }
     }
 
-    private void InsertSingleNode(List<string> nodeNames)
+    private void InsertSingleNode(List<string> nodeNames, bool isCombinatorialEnabled)
     {
-        var newNode = new Node(nodeNames);
+        var newNode = new Node(nodeNames, isCombinatorialEnabled);
         _childNodes?.Add(newNode);
     }
 
@@ -66,7 +65,7 @@ public class Node
         });
     }
 
-    private void InsertCombinatoryNodes(List<string> nodeNames, string currentName)
+    private void InsertCombinatorialNodes(List<string> nodeNames, string currentName)
     {
         nodeNames.RemoveAt(0);
         var names = currentName.Split('|').ToList();
